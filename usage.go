@@ -6,6 +6,7 @@ package envconfig
 
 import (
 	"encoding"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -45,13 +46,13 @@ var (
 
 func implementsInterface(t reflect.Type) bool {
 	return t.Implements(decoderType) ||
-		reflect.PtrTo(t).Implements(decoderType) ||
+		reflect.PointerTo(t).Implements(decoderType) ||
 		t.Implements(setterType) ||
-		reflect.PtrTo(t).Implements(setterType) ||
+		reflect.PointerTo(t).Implements(setterType) ||
 		t.Implements(textUnmarshalerType) ||
-		reflect.PtrTo(t).Implements(textUnmarshalerType) ||
+		reflect.PointerTo(t).Implements(textUnmarshalerType) ||
 		t.Implements(binaryUnmarshalerType) ||
-		reflect.PtrTo(t).Implements(binaryUnmarshalerType)
+		reflect.PointerTo(t).Implements(binaryUnmarshalerType)
 }
 
 // toTypeDescription converts Go types into a human readable description
@@ -105,8 +106,9 @@ func toTypeDescription(t reflect.Type) string {
 			return name
 		}
 		return "Float"
+	default:
+		return fmt.Sprintf("%+v", t)
 	}
-	return fmt.Sprintf("%+v", t)
 }
 
 // Usage writes usage information to stdout using the default header and table format
@@ -116,8 +118,7 @@ func Usage(prefix string, spec interface{}) error {
 	tabs := tabwriter.NewWriter(os.Stdout, 1, 0, 4, ' ', 0)
 
 	err := Usagef(prefix, spec, tabs, DefaultTableFormat)
-	tabs.Flush()
-	return err
+	return errors.Join(err, tabs.Flush())
 }
 
 // Usagef writes usage information to the specified io.Writer using the specified template specification

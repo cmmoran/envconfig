@@ -1,3 +1,4 @@
+//go:build go1.8
 // +build go1.8
 
 package envconfig
@@ -18,15 +19,15 @@ func TestParseURL(t *testing.T) {
 	var s SpecWithURL
 
 	os.Clearenv()
-	os.Setenv("ENV_CONFIG_URLVALUE", "https://github.com/kelseyhightower/envconfig")
-	os.Setenv("ENV_CONFIG_URLPOINTER", "https://github.com/kelseyhightower/envconfig")
+	os.Setenv("ENV_CONFIG_URLVALUE", "https://github.com/cmmoran/envconfig")
+	os.Setenv("ENV_CONFIG_URLPOINTER", "https://github.com/cmmoran/envconfig")
 
 	err := Process("env_config", &s)
 	if err != nil {
 		t.Fatal("unexpected error:", err)
 	}
 
-	u, err := url.Parse("https://github.com/kelseyhightower/envconfig")
+	u, err := url.Parse("https://github.com/cmmoran/envconfig")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
